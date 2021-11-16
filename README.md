@@ -1,9 +1,9 @@
 # Поисковик мемов "Memento"
 
 ## В проекте учавствуют:
-* [Дарья Кидинова](https://github.com/ezuryy) 
-* [Александр Частиков](https://github.com/papazloynt)
-* [Даниил Бахланов](https://github.com/Similization)
+* [Кидинова Дарья](https://github.com/ezuryy) 
+* [Частиков Александр](https://github.com/papazloynt)
+* [Бахланов Даниил](https://github.com/Similization)
 * [Ушаков Захар](https://github.com/HvarZ)
 
 ## Основная задача проекта
