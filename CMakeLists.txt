@@ -4,11 +4,14 @@ project(daemon)
 set(CMAKE_CXX_STANDARD 17)
 
 # sqlite3
+find_package(Threads)
 add_library(database SHARED
         ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3/sqlite3.c)
 target_include_directories(database
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3)
-target_link_libraries(database dl)
+target_link_libraries(database
+        PUBLIC Threads::Threads
+        dl)
 
 # daemon
 add_executable(daemon main.cpp daemon/daemon.cpp)
