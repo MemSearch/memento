@@ -12,7 +12,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt install
-          sudo apt install lcov cppcheck valgrind gcovr
+          sudo apt-cache search sqlite
+          sudo apt install sqlite3
           git submodule update --init
       - name: Build
         run: |
