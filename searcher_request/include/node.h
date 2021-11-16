@@ -1,6 +1,8 @@
 #ifndef MEMENTO_NODE_H
 #define MEMENTO_NODE_H
 
+#include <unordered_map>
+
 struct Node {
   std::unordered_map<wchar_t, Node *> children_;
   bool isEnd_ = false;
