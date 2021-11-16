@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt install
+          sudo apt install lcov cppcheck valgrind gcovr
+          git submodule update --init
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make all
+      - name: Test daemon
+        run: |
+          cd build
+          ./test_daemon
