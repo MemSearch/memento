@@ -6,7 +6,7 @@
 
 using std::string;
 using std::cout;
-using std::endl;
+using std::cerr;
 
 class Daemon {
 public:
@@ -26,8 +26,8 @@ public:
 private:
     void initialize(const string& parsed, const string& recognized);
 
-    sqlite3* parsedDB;
-    sqlite3* recognizedDB;
+    sqlite3* parsedDB = nullptr;
+    sqlite3* recognizedDB = nullptr;
 };
 
 int callbackEmpty(void* sum, int args, char** argv, char** azColName);

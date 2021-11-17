@@ -23,7 +23,7 @@ TEST(Test1, getURL) {
     int rc = sqlite3_exec(pdb, creating_table.c_str(), nullptr, nullptr, &error_parsed);
 
     if (rc != SQLITE_OK) {
-        std::cerr << "error: " << sqlite3_errmsg(pdb);
+        cerr << "error: " << sqlite3_errmsg(pdb);
     }
     sqlite3_free(error_parsed);
 
@@ -65,12 +65,12 @@ TEST(Test2, writeRecognitionResults) {
     const char *command = "SELECT * FROM recognized;";
     int rc = sqlite3_prepare_v2(rdb, command, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
-        std::cerr << "error: " << sqlite3_errmsg(rdb);
+        cerr << "error: " << sqlite3_errmsg(rdb);
     }
     size_t i = 0;
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         if (i >= urls.size()) {
-            std::cerr << "sizes are not equal\n";
+            cerr << "sizes are not equal\n";
             break;
         }
         const char *url = (char*)sqlite3_column_text(stmt, 0);
@@ -83,7 +83,7 @@ TEST(Test2, writeRecognitionResults) {
     }
 
     if (rc != SQLITE_DONE) {
-        std::cerr << "error: " << sqlite3_errmsg(rdb);
+        cerr << "error: " << sqlite3_errmsg(rdb);
     }
     sqlite3_finalize(stmt);
     sqlite3_close(rdb);
@@ -111,7 +111,7 @@ TEST(Test3, recognize) {
     int rc = sqlite3_exec(pdb, pCommand.c_str(), nullptr, nullptr, &error_parsed);
 
     if (rc != SQLITE_OK) {
-        std::cerr << "error: " << sqlite3_errmsg(pdb);
+        cerr << "error: " << sqlite3_errmsg(pdb);
     }
     sqlite3_free(error_parsed);
     sqlite3_close(pdb);
@@ -131,12 +131,12 @@ TEST(Test3, recognize) {
     const char* rCommand = "SELECT * FROM recognized;";
     rc = sqlite3_prepare_v2(rdb, rCommand, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
-        std::cerr << "error: " << sqlite3_errmsg(rdb);
+        cerr << "error: " << sqlite3_errmsg(rdb);
     }
     size_t i = 0;
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         if (i >= urls.size()) {
-            std::cerr << "sizes are not equal\n";
+            cerr << "sizes are not equal\n";
             break;
         }
         const char *url = (char*)sqlite3_column_text(stmt, 0);
@@ -149,7 +149,7 @@ TEST(Test3, recognize) {
     }
 
     if (rc != SQLITE_DONE) {
-        std::cerr << "error: " << sqlite3_errmsg(rdb);
+        cerr << "error: " << sqlite3_errmsg(rdb);
     }
     sqlite3_finalize(stmt);
     sqlite3_close(rdb);

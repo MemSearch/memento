@@ -1,10 +1,10 @@
 #include "daemon.h"
 
-Daemon::Daemon() : parsedDB(nullptr), recognizedDB(nullptr) {
+Daemon::Daemon() {
     initialize("parsed.db", "recognized.db");
 }
 
-Daemon::Daemon(const string& parsed, const string& recognized) : parsedDB(nullptr), recognizedDB(nullptr) {
+Daemon::Daemon(const string& parsed, const string& recognized) {
     initialize(parsed, recognized);
 }
 
@@ -17,7 +17,7 @@ void Daemon::initialize(const string& parsed, const string& recognized) {
     int rc = sqlite3_exec(parsedDB, creating_table.c_str(), nullptr, nullptr, &error_parsed);
 
     if (rc != SQLITE_OK) {
-        std::cerr << "error: " << sqlite3_errmsg(parsedDB);
+        cerr << "error: " << sqlite3_errmsg(parsedDB);
     }
     sqlite3_free(error_parsed);
 
@@ -30,7 +30,7 @@ void Daemon::initialize(const string& parsed, const string& recognized) {
     rc = sqlite3_exec(recognizedDB, creating_table.c_str(), nullptr, nullptr, &error_recognized);
 
     if (rc != SQLITE_OK) {
-        std::cerr << "error: " << sqlite3_errmsg(recognizedDB);
+        cerr << "error: " << sqlite3_errmsg(recognizedDB);
     }
     sqlite3_free(error_recognized);
 }
