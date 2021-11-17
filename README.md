@@ -14,7 +14,7 @@
 
 ## Принцип работы
 
-![work](https://github.com/MemSearch/memento/tree/daemon/uml_diagrams/work_diagram.png?raw=true)
+![work](uml_diagrams/work_diagram.png?raw=true)
 
 ## Распределение задач
 
@@ -25,4 +25,4 @@
 При этом функцию для распознавания текста пишу я, а для функцию для определения шаблона напишет Захар.
 Для распознавания текста собираюсь использовать `tesseract`. На UML диаграмме класс `Daemon`, взаимодействующий с двумя БД.   
 
-![daemonUML](https://github.com/MemSearch/memento/tree/daemon/uml_diagrams/daemon_class_UML.png?raw=true)
+![daemonUML](uml_diagrams/daemon_class_UML.png?raw=true)
