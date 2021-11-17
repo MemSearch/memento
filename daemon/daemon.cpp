@@ -60,7 +60,7 @@ string Daemon::getTextInPicture(const string& url) {
     return "";
 }
 
-void Daemon::writeRecognitionResults(const string& url, const int& pitTemplate, const string& text) {
+void Daemon::writeRecognitionResults(const string& url, const int& picTemplate, const string& text) {
     // записываем результат в recognizedDB
 }
 

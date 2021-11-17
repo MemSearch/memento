@@ -21,7 +21,7 @@ public:
     void recognize();
     static int getTemplateOfPicture(const string& url);
     static string getTextInPicture(const string& url);
-    void writeRecognitionResults(const string& url, const int& pitTemplate, const string& text);
+    void writeRecognitionResults(const string& url, const int& picTemplate, const string& text);
 
 private:
     void initialize(const string& parsed, const string& recognized);
