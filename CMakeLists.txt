@@ -7,9 +7,20 @@ add_library(searcher_request STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/searcher_request/sources/searcher_request.cpp)
 target_include_directories(searcher_request PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/searcher_request/include)
+
 add_library(trie STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/searcher_request/sources/trie.cpp)
 target_include_directories(trie PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/searcher_request/include)
 
 add_executable(main main.cpp)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest)
+enable_testing()
+
+add_executable(tests_search tests/tests.cpp)
+
+target_include_directories(tests_search PUBLIC
+        ${PROJECT_SOURCE_DIR}/searcher_request)
+
+target_link_libraries(tests_search gtest_main searcher_request)
