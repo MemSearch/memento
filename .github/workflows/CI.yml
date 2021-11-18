@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt install
+          git submodule update --init
+          sqlite3 --version
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make all
+      - name: Test daemon
+        run: |
+          cd build
+          ./test_daemon
