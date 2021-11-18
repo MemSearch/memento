@@ -54,3 +54,12 @@ target_link_libraries(img_storage
 #Tests
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest)
 enable_testing()
+
+add_executable(tests tests/tests.cpp)
+
+target_include_directories(tests PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries(tests
+        gtest_main
+        img_storage)
