@@ -31,7 +31,7 @@ public:
     }
 
     Status InsertImg(const std::string imgUrl) { return Status::ERROR; }
-    std::vector<std::string> GetImgs() { return std::vector<std::string>();}
+    static std::vector<std::string> GetImgs() { return std::vector<std::string>();}
 
 private:
     Status CreateDataBase();

@@ -17,8 +17,8 @@ struct TimeLastMem {
                 const size_t seconds_,
                 const size_t minutes) :
                 hour(hour_),
-                seconds(seconds_),
-                minutes(minutes_) {}
+                minutes(minutes_),
+                seconds(seconds_) {}
 
     size_t hour;
     size_t minutes;
@@ -30,7 +30,7 @@ public:
     // Initialization, /start in bot, detach thread of work
     explicit TgBotParser(std::string apiKey) {}
     // Add new site if it's valid
-    void AddSite() {}
+    void AddSite(const std::string& chatName) {}
 
 private:
     bool isValid(const std::string& chatName) const { return false; }
