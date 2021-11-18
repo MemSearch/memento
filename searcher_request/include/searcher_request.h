@@ -20,16 +20,17 @@ public:
   explicit SearcherRequest(const std::wstring& request);
   explicit SearcherRequest(std::wstring&& request);
 
-  void SetRequest(const std::wstring& request);
-  void SetRequest(std::wstring&& request);
+  void setRequest(const std::wstring& request);
+  void setRequest(std::wstring&& request);
 
 private:
   std::wstring request_;
   Trie trie;
 
 private:
-  auto GetPopularityWords() const noexcept -> std::set<wordPopularity>;
-  [[nodiscard]] auto GetSimilarWords() const noexcept -> std::set<std::wstring, Compare>;
+  auto getPopularityWords() const noexcept -> std::set<wordPopularity>;
+  [[nodiscard]] auto getSimilarWords() const noexcept ->
+      std::set<std::wstring, Compare>;
 };
 
 #endif // MEMENTO_SEARCHER_REQUEST_H

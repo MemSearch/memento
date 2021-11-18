@@ -16,11 +16,11 @@ public:
   Trie();
   ~Trie();
 
-  void Add(const std::wstring &string) noexcept;
+  void add(const std::wstring &string) noexcept;
 
-  [[nodiscard]] auto Search(const std::wstring &string) const noexcept -> bool;
+  [[nodiscard]] auto search(const std::wstring &string) const noexcept -> bool;
 
-  [[maybe_unused]] auto GetCorrections(std::wstring &string) const noexcept
+  [[maybe_unused]] auto getCorrections(std::wstring &string) const noexcept
       -> std::optional<std::set<std::wstring>>;
 
 private:
@@ -28,13 +28,13 @@ private:
 
 
 private:
-  void RecursiveReplace(const std::wstring &string,
+  void recursiveReplace(const std::wstring &string,
                         std::set<std::wstring> &corrections, Node *currentNode,
                         const std::wstring &correction,
                         const size_t counter = 0,
                         size_t errorCount = 0) const noexcept;
 
-  void Clear(Node *node_p) noexcept;
+  void clear(Node *node_p) noexcept;
 };
 
 #endif // MEMENTO_TRIE_H

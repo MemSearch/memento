@@ -11,10 +11,10 @@ auto ToLowerCase(const std::wstring &string) noexcept -> std::wstring {
 
 Trie::Trie() : root_(new Node) {}
 Trie::~Trie() {
-  Clear(root_);
+  clear(root_);
 }
 
-void Trie::Add(const std::wstring &string) noexcept {
+void Trie::add(const std::wstring &string) noexcept {
   if (string.empty()) {
     return;
   }
@@ -37,7 +37,8 @@ void Trie::Add(const std::wstring &string) noexcept {
   }
 }
 
-[[nodiscard]] auto Trie::Search(const std::wstring &string) const noexcept -> bool {
+[[nodiscard]] auto Trie::search(const std::wstring &string) const noexcept ->
+    bool {
   auto *node = root_;
   for (auto key_ : string) {
     if (node->children_.count(key_) != 0) {
@@ -50,20 +51,20 @@ void Trie::Add(const std::wstring &string) noexcept {
   return node->isEnd_;
 }
 
-[[maybe_unused]] auto Trie::GetCorrections(std::wstring &string) const noexcept
+[[maybe_unused]] auto Trie::getCorrections(std::wstring &string) const noexcept
     -> std::optional<std::set<std::wstring>> {
   std::set<std::wstring> result;
   auto str = ToLowerCase(string);
-  if (Search(str)) {
+  if (search(str)) {
     return std::optional<std::set<std::wstring>>();
   }
   std::set<std::wstring> corrections;
   std::wstring correction;
-  RecursiveReplace(str, corrections, root_, correction);
+  recursiveReplace(str, corrections, root_, correction);
   return std::make_optional(corrections);
 }
 
-void Trie::RecursiveReplace(const std::wstring &string,
+void Trie::recursiveReplace(const std::wstring &string,
                       std::set<std::wstring> &corrections, Node *currentNode,
                       const std::wstring &correction,
                       const size_t counter, size_t errorCount) const noexcept {
@@ -87,24 +88,25 @@ void Trie::RecursiveReplace(const std::wstring &string,
 
   for (const auto& node : currentNode->children_) {
     if (node.first == string[counter]) {
-      RecursiveReplace(string, corrections, node.second,
+      recursiveReplace(string, corrections, node.second,
                        correction + string[counter], counter + 1, errorCount);
     } else {
       if (string.size() >= counter + 1 && node.first == string[counter + 1]) {
-        RecursiveReplace(string, corrections, currentNode, correction,
+        recursiveReplace(string, corrections, currentNode, correction,
                          counter + 1,errorCount + 1);
       }
       if (node.second->children_.count(string[counter]) != 0 && node.first == string[counter + 1]) {
-        RecursiveReplace(string, corrections, node.second->children_.at(string[counter]),
+        recursiveReplace(string, corrections, node.second->children_.at
+                                              (string[counter]),
                          correction + node.first + string[counter],
                          counter + 2, errorCount + 1);
       }
       if (node.second->children_.count(string[counter]) != 0)
-        RecursiveReplace(string, corrections, node.second,
+        recursiveReplace(string, corrections, node.second,
                          correction + node.first, counter, errorCount + 1);
 
       if (node.first != string[counter]) {
-        RecursiveReplace(string, corrections, node.second,
+        recursiveReplace(string, corrections, node.second,
                          correction + node.first, counter + 1,
                          errorCount + 1);
       }
@@ -112,12 +114,12 @@ void Trie::RecursiveReplace(const std::wstring &string,
   }
 }
 
-void Trie::Clear(Node *node_p) noexcept {
+void Trie::clear(Node *node_p) noexcept {
   if (node_p == nullptr) {
     return;
   }
   for (auto node : node_p->children_) {
-    Clear(node.second);
+    clear(node.second);
   }
   delete node_p;
 }
