@@ -1,12 +1,16 @@
 #ifndef C_C_TG_BOT_PARSER_H
 #define C_C_TG_BOT_PARSER_H
 
-// Add telegram bot header
+// private headers
+#include <unsorted_img_storage/img_url_db.h>
 
 // C++ headers
 #include <string>
 #include <vector>
 #include <utility>
+
+// tgbot-cpp
+#include <tgbot/tgbot.h>
 
 struct TimeLastMem {
     TimeLastMem(const size_t hour_,
