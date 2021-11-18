@@ -15,11 +15,11 @@ find_package(CURL)
 add_subdirectory(third_party/tgbot-cpp)
 
 # SQLite3
-add_library(unsortedDB SHARED
+add_library(db SHARED
         ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3/sqlite3.c)
-target_include_directories(unsortedDB PUBLIC
+target_include_directories(db PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3)
-target_link_libraries(unsortedDB
+target_link_libraries(db
         PUBLIC Threads::Threads
         dl)
 
@@ -49,4 +49,4 @@ add_library(img_storage SHARED
 target_include_directories(img_storage
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(img_storage
-        unsortedDB)
+        db)
