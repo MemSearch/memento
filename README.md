@@ -25,4 +25,4 @@
 При этом функцию для распознавания текста пишу я, а для функцию для определения шаблона напишет Захар.
 Для распознавания текста собираюсь использовать `tesseract`. На UML диаграмме класс `Daemon`, взаимодействующий с двумя БД.   
 
-![daemonUML](uml_diagrams/daemon_class_UML.png?raw=true)
+![daemonUML](uml_diagrams/daemon_class_UML.png)
