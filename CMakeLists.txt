@@ -50,3 +50,7 @@ target_include_directories(img_storage
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(img_storage
         db)
+
+#Tests
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest)
+enable_testing()
