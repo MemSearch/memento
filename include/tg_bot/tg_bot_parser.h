@@ -15,7 +15,7 @@
 struct TimeLastMem {
     TimeLastMem(const size_t hour_,
                 const size_t seconds_,
-                const size_t minutes) :
+                const size_t minutes_) :
                 hour(hour_),
                 minutes(minutes_),
                 seconds(seconds_) {}
@@ -29,16 +29,22 @@ class TgBotParser {
 public:
     // Initialization, /start in bot, detach thread of work
     explicit TgBotParser(std::string apiKey) {}
+
+    ~TgBotParser();
+
     // Add new site if it's valid
     void AddSite(const std::string& chatName) {}
 
+    std::vector<std::string> GetDB() { return {};}
+
 private:
-    bool isValid(const std::string& chatName) const { return false; }
+    [[nodiscard]] bool isValid(const std::string& chatName) const { return false; }
     // Take first 100 memes and then latest of every day
     void Parse(const std::string& chatName) {}
     // Write to BD image's URL
     void WriteImgInDB(std::string imgURL) {}
 
+    ImgUrlDB db;
     std::vector<std::pair<std::string, TimeLastMem>> chatsName;
 };
 #endif //C_C_TG_BOT_PARSER_H

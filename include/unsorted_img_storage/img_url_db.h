@@ -31,10 +31,10 @@ public:
     }
 
     Status InsertImg(const std::string imgUrl) { return Status::ERROR; }
-    static std::vector<std::string> GetImgs() { return std::vector<std::string>();}
+    std::vector<std::string> GetImgs() { return {};}
 
 private:
-    Status CreateDataBase();
+    Status CreateDataBase() {}
 
     sqlite3* db;
     char* err;
