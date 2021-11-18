@@ -1,0 +1,50 @@
+cmake_minimum_required(VERSION 2.18)
+project(memento)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+set(Boost_USE_MULTITHREADED ON)
+
+find_package(Threads REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Boost COMPONENTS system REQUIRED)
+find_package(CURL)
+
+# Add Telegram API
+add_subdirectory(third_party/tgbot-cpp)
+
+# SQLite3
+add_library(unsortedDB SHARED
+        ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3/sqlite3.c)
+target_include_directories(unsortedDB PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3)
+target_link_libraries(unsortedDB
+        PUBLIC Threads::Threads
+        dl)
+
+# bot
+add_library(mybot SHARED
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/tg_bot.cpp)
+target_include_directories(mybot PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${OPENSSL_INCLUDE_DIR}
+        ${Boost_INCLUDE_DIR})
+if (CURL_FOUND)
+    target_include_directories(mybot PUBLIC
+            ${CURL_INCLUDE_DIRS})
+    add_definitions(-DHAVE_CURL)
+endif()
+target_link_libraries(mybot
+        img_storage
+        TgBot
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${OPENSSL_LIBRARIES}
+        ${Boost_LIBRARIES}
+        ${CURL_LIBRARIES})
+
+# img_storage
+add_library(img_storage SHARED
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/img_url_db.cpp)
+target_include_directories(img_storage
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(img_storage
+        database)
