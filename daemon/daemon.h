@@ -19,12 +19,12 @@ public:
     void work();
     static string getURL();
     void recognize();
-    static int getTemplateOfPicture(const string& url);
-    static string getTextInPicture(const string& url);
     void writeRecognitionResults(const string& url, const int& picTemplate, const string& text);
 
 private:
     void initialize(const string& parsed, const string& recognized);
+    static int getTemplateOfPicture(const string& url);
+    static string getTextInPicture(const string& url);
 
     sqlite3* parsedDB = nullptr;
     sqlite3* recognizedDB = nullptr;
