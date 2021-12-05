@@ -2,34 +2,35 @@
 #define PROJECT_DAEMON_H
 
 #include <iostream>
-#include "sqlite3.h"
+#include <iostream>
+#include <libpq-fe.h>
+#include <cstdlib>
+#include <string>
+#include <thread>
+#include <chrono>
+#include <csignal>
 
 using std::string;
-using std::cout;
-using std::cerr;
 
 class Daemon {
 public:
     Daemon();
-    Daemon(const string& parsed, const string& recognized);
+    Daemon(PGconn *connection) = delete;
     ~Daemon() {
-        sqlite3_close(parsedDB);
-        sqlite3_close(recognizedDB);
+        PQfinish(conn);
     }
-    void work();
-    static string getURL();
+    std::pair<int, string> getPath();
     void recognize();
-    void writeRecognitionResults(const string& url, const int& picTemplate, const string& text);
 
 private:
-    void initialize(const string& parsed, const string& recognized);
-    static int getTemplateOfPicture(const string& url);
-    static string getTextInPicture(const string& url);
+    void removeRecord(const std::pair<int, string>& record);
+    int getBiggestID();
+    void insertRecord(int id, const string& path, int pattern , const string& text);
+    bool isEmpty();
+    int getTemplateOfPicture(const string& path);
+    string getTextInPicture(const string& path);
 
-    sqlite3* parsedDB = nullptr;
-    sqlite3* recognizedDB = nullptr;
+    PGconn *conn;
 };
-
-int callbackEmpty(void* sum, int args, char** argv, char** azColName);
 
 #endif //PROJECT_DAEMON_H

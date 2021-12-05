@@ -1,77 +1,125 @@
 #include "daemon.h"
 
 Daemon::Daemon() {
-    initialize("parsed.db", "recognized.db");
-}
+    const char connectionInfo[] =
+            "postgresql://ezury@localhost?port=5432&dbname=mydb";
+    conn = PQconnectdb(connectionInfo);
 
-Daemon::Daemon(const string& parsed, const string& recognized) {
-    initialize(parsed, recognized);
-}
-
-void Daemon::initialize(const string& parsed, const string& recognized) {
-    sqlite3_open(parsed.c_str(), &parsedDB);
-
-    string creating_table = "CREATE TABLE IF NOT EXISTS parsed(URL TEXT);";
-
-    char* error_parsed;
-    int rc = sqlite3_exec(parsedDB, creating_table.c_str(), nullptr, nullptr, &error_parsed);
-
-    if (rc != SQLITE_OK) {
-        cerr << "error: " << sqlite3_errmsg(parsedDB);
+    if (PQstatus(conn) != CONNECTION_OK) {
+        std::cout << "Connection to database failed: " << PQerrorMessage(conn)
+                  << std::endl;
+        PQfinish(conn);
+        // TODO: throw exception
+    } else {
+        std::cout << "Connection to database succeed." << std::endl;
     }
-    sqlite3_free(error_parsed);
-
-
-    sqlite3_open(recognized.c_str(), &recognizedDB);
-
-    creating_table = "CREATE TABLE IF NOT EXISTS recognized(URL TEXT, Template INTEGER, Text TEXT);";
-
-    char* error_recognized;
-    rc = sqlite3_exec(recognizedDB, creating_table.c_str(), nullptr, nullptr, &error_recognized);
-
-    if (rc != SQLITE_OK) {
-        cerr << "error: " << sqlite3_errmsg(recognizedDB);
-    }
-    sqlite3_free(error_recognized);
 }
 
-string Daemon::getURL() {
-    // извлекаем запись из parsedDB
-    return "";
+static void signalHandler(int signum) {
+    std::cout << "Interrupt signal (" << signum << ") received.\n";
+    exit(signum);
+}
+
+std::pair<int, string> Daemon::getPath() {
+    PGresult *res = PQexec(conn, "SELECT id, name FROM new_table ORDER BY id DESC limit 1;");
+    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+        std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
+    } else {
+        std::cout << "Get " << PQntuples(res) << " tuples, each tuple has "
+                  << PQnfields(res) << " fields" << std::endl;
+        // print column values
+        std::cout << PQgetvalue(res, 0, 0) << "   "
+                  << PQgetvalue(res, 0, 1) << '\n';
+        char buffer[100];
+        strncpy(buffer, PQgetvalue(res, 0, 0), 100);
+        int id = atoi(buffer);
+        std::pair<int, string> result = {id, string(PQgetvalue(res, 0, 1))};
+        PQclear(res);
+        return result;
+    }
+    PQclear(res);
+    return {0, ""};
+}
+
+void Daemon::removeRecord(const std::pair<int, string>& record) {
+    const string command =
+            "DELETE FROM new_table WHERE id = " + std::to_string(record.first) + " AND name = '" + record.second + "'";
+    PGresult *res = PQexec(conn, command.c_str());
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+        std::cout << "Delete from table failed: " << PQresultErrorMessage(res)
+                  << std::endl;
+    }
+    PQclear(res);
+}
+
+int Daemon::getBiggestID() {
+    int result = 0;
+
+    PGresult *res = PQexec(conn, "SELECT id FROM new_table ORDER BY id DESC limit 1;");
+    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+        std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
+    } else if (PQntuples(res) != 0) {
+        char buffer[100];
+        strncpy(buffer, PQgetvalue(res, 0, 0), 100);
+        result = atoi(buffer);
+    }
+    PQclear(res);
+    return result;
+}
+
+void Daemon::insertRecord(int id, const string& path, int pattern , const string& text) {
+    const string command =
+            "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + path + "', " + std::to_string(pattern) + ", '" + text + "');";
+    PGresult *res = PQexec(conn, command.c_str());
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+        std::cout << "Insert into table failed: " << PQresultErrorMessage(res)
+                  << std::endl;
+    }
+    PQclear(res);
+}
+
+bool Daemon::isEmpty() {
+    bool empty = true;
+
+    PGresult *res = PQexec(conn, "SELECT * FROM new_table ORDER BY id DESC limit 1;");
+    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+        std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
+    } else if (PQntuples(res) != 0) {
+        std::cout << PQgetvalue(res, 0, 0) << "\n";
+        empty = false;
+    }
+    PQclear(res);
+    return empty;
 }
 
 void Daemon::recognize() {
-    // извлекаем запись из parsedDB
-    string url = getURL();
-    // определяем шаблон и текст картинки
-    int picTemplate = getTemplateOfPicture(url);
-    string picText = getTextInPicture(url);
-    // записываем результат в recognizedDB
-    writeRecognitionResults(url, picTemplate, picText);
+    auto signal = std::signal(SIGINT, signalHandler);
+    while (signal != SIG_IGN) {
+        if (isEmpty()) {
+            std::cout << "Sleep for 1 sec\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            continue;
+        }
+        auto record = getPath();
+        std::cout << "We get :\n";
+        std::cout << record.first << "   "
+                  << record.second << '\n';
+        if (!(record.first == 0 && record.second.empty())) {
+            removeRecord(record);
+        }
+        int id = getBiggestID() + 1;
+        int picTemplate = getTemplateOfPicture(record.second);
+        string picText = getTextInPicture(record.second);
+        insertRecord(id, record.second, picTemplate, picText);
+    }
 }
 
-int Daemon::getTemplateOfPicture(const string& url) {
-    // определяем шаблон картинки
+int Daemon::getTemplateOfPicture(const string& path) {
+    // TODO: определяем шаблон картинки
     return 1;
 }
 
-string Daemon::getTextInPicture(const string& url) {
-    // определяем текст картинки
+string Daemon::getTextInPicture(const string& path) {
+    // TODO: определяем текст картинки
     return "";
-}
-
-void Daemon::writeRecognitionResults(const string& url, const int& picTemplate, const string& text) {
-    // записываем результат в recognizedDB
-}
-
-void Daemon::work() {
-    // пока parsedDB не пуста, будем распознавать каждую ссылку
-    recognize();
-}
-
-int callbackEmpty(void* sum, int args, char** argv, char** azColName) {
-    std::string str = argv[0];
-    int *intPtr = static_cast<int*>(sum);
-    *intPtr = std::stoi(str);
-    return 0;
 }
