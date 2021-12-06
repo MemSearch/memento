@@ -124,3 +124,7 @@ void Trie::clear(Node *node_p) noexcept {
   delete node_p;
 }
 
+void Trie::clearFull() noexcept {
+  clear(root_);
+}
+

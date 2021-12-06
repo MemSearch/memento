@@ -23,6 +23,8 @@ public:
   [[maybe_unused]] auto getCorrections(std::wstring &string) const noexcept
       -> std::optional<std::set<std::wstring>>;
 
+  void clearFull() noexcept;
+
 private:
   Node *root_;
 
