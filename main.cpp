@@ -4,5 +4,11 @@ using namespace std;
 
 
 int main() {
-  SearcherRequest(L"are you winning son?", 1);
+  SearcherRequest request(L"are you winning son?", 1);
+  auto vector = request.getResult();
+
+  for (const auto& path : vector) {
+    std::cout << path << std::endl;
+  }
+
 }
