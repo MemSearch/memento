@@ -7,18 +7,24 @@ auto eraseExtraSpaces(const std::wstring &string) -> std::wstring {
   result.erase(std::unique(result.begin(), result.end(),
                            [](wchar_t l, wchar_t r) {
                              return std::isspace(l) && l == r;
-                           }), result.end());
+                           }),
+               result.end());
   return result;
 }
 
 auto fixString(const std::wstring &string) -> std::wstring {
-  std::wstring result = string;
+  std::wstring result;
+  bool isBan = false;
   for (auto& symbol : string) {
+    isBan = false;
     for (const auto& banSymbol : SearcherRequest::forbiddenSymbols) {
       if (symbol == banSymbol) {
-        result.erase(symbol);
+        isBan = true;
         break;
       }
+    }
+    if (!isBan) {
+      result.push_back(symbol);
     }
   }
 

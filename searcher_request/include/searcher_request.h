@@ -32,7 +32,7 @@ private:
       L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9',  L'\n'};
 
 private:
-  [[nodiscard]] auto getClusterSentence() const noexcept ->
+  [[nodiscard]] auto getClusterSentences() const noexcept ->
       std::vector<clusterElement>;
 
   friend auto fixString(const std::wstring& string) -> std::wstring;
