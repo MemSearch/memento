@@ -2,16 +2,12 @@
 #include "trie.h"
 
 
-SearcherRequest::SearcherRequest(const std::wstring &request) {
-
-}
-
-
 auto eraseExtraSpaces(const std::wstring &string) -> std::wstring {
   auto result = string;
-  result.erase(std::unique(string.begin(), string.end(),
-[](const wchar_t l, const wchar_t r) { return std::isspace(l) && l == r; }),
-               string.end());
+  result.erase(std::unique(result.begin(), result.end(),
+                           [](wchar_t l, wchar_t r) {
+                             return std::isspace(l) && l == r;
+                           }), result.end());
   return result;
 }
 
@@ -32,6 +28,7 @@ auto fixString(const std::wstring &string) -> std::wstring {
 
 auto parseString(const std::wstring &string) -> std::set<std::wstring> {
   std::set<std::wstring> result;
+  std::wstring word;
   auto resultString = fixString(string);
 
   auto beginIter = resultString.begin();
@@ -39,9 +36,22 @@ auto parseString(const std::wstring &string) -> std::set<std::wstring> {
 
   while (spaceIter != resultString.end()) {
     spaceIter = std::find(beginIter, resultString.end(), ' ');
-    result.insert(std::wstring(beginIter, spaceIter));
+    word = {beginIter, spaceIter};
+    if (!word.empty()) {
+      result.insert(std::wstring(beginIter, spaceIter));
+    }
     if (spaceIter != string.end()) {
       beginIter = std::next(spaceIter);
     }
+  }
+
+  return result;
+}
+
+SearcherRequest::SearcherRequest(const std::wstring &request) {
+  auto treeElements = parseString(request);
+
+  for (const auto& element : treeElements) {
+    trie_.add(element);
   }
 }
