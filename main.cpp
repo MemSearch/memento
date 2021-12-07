@@ -1,5 +1,8 @@
-#include <iostream>
-int main() {
+#include "searcher_request.h"
 
-  return EXIT_SUCCESS;
+using namespace std;
+
+
+int main() {
+  SearcherRequest(L"are you winning son?", 1);
 }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include <array>
+#include <stdexcept>
 
 #include <libpq-fe.h>
 
@@ -22,7 +23,7 @@ public:
 public:
   SearcherRequest() = default;
   ~SearcherRequest() = default;
-  explicit SearcherRequest(const std::wstring& request);
+  explicit SearcherRequest(std::wstring  request, size_t pattern);
 
   void setRequest(const std::wstring& request);
 
@@ -30,6 +31,7 @@ public:
 
 private:
   std::wstring request_;
+  size_t pattern_ = 0;
   Trie trie_;
   std::vector<wordsClusterElement> elements_;
   std::set<std::wstring> trieWords_;
@@ -39,8 +41,8 @@ private:
       L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9',  L'\n'};
 
 private:
-  [[nodiscard]] auto getClusterSentences(PGconn *conn,
-                                         int pattern) const noexcept
+  [[nodiscard]] static auto getClusterSentences(PGconn *conn,
+                                         int pattern) noexcept
       -> std::vector<clusterElement>;
 
   friend auto fixString(const std::wstring& string) -> std::wstring;
