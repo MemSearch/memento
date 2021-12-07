@@ -4,11 +4,16 @@
 #include <string>
 #include <set>
 #include <utility>
+#include <algorithm>
+#include <vector>
+#include <array>
 
 #include "trie.h"
 
-
 class SearcherRequest final {
+public:
+  using clusterElement = std::pair<std::wstring, std::wstring>;
+
 public:
   SearcherRequest() = default;
   explicit SearcherRequest(const std::wstring& request);
@@ -20,21 +25,19 @@ public:
 private:
   std::wstring request_;
   Trie trie_;
-  static constexpr std::array<wchar_t, 28> forbiddenSymbols{
-      L',', L';', L'?', L'!',
-      L':', L'"', L'|', L'\\',
-      L'.', L'/',L'(', L')',
-      L'@', L'#', L'$', L'%',
-      L'^', L'&',  L'*', L'1',
-      L'2', L'3', L'4', L'5',
-      L'6', L'7', L'8', L'9'};
+  std::vector<clusterElement> elements_;
+  static constexpr std::array<wchar_t, 29> forbiddenSymbols{
+      L',', L';', L'?', L'!', L':', L'"', L'|', L'\\', L'.', L'/',
+      L'(', L')', L'@', L'#', L'$', L'%', L'^', L'&',  L'*', L'1',
+      L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9',  L'\n'};
 
 private:
-  [[nodiscard]] auto getClusterWords() const noexcept ->
-      std::set<std::wstring>;
-  [[nodiscard]] auto getSimilarWords() const noexcept ->
-      std::set<std::wstring>;
+  [[nodiscard]] auto getClusterSentence() const noexcept ->
+      std::vector<clusterElement>;
+
   friend auto fixString(const std::wstring& string) -> std::wstring;
+  friend auto parseString(const std::wstring& string) -> std::set<std::wstring>;
+  friend auto eraseExtraSpaces(const std::wstring& string) -> std::wstring;
 };
 
 #endif // MEMENTO_SEARCHER_REQUEST_H
