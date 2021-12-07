@@ -1,6 +1,8 @@
 #ifndef MEMENTO_TRIE_H
 #define MEMENTO_TRIE_H
 
+#pragma once
+
 #include <iostream>
 #include <locale>
 #include <set>

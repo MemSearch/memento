@@ -10,6 +10,7 @@ auto ToLowerCase(const std::wstring &string) noexcept -> std::wstring {
 }
 
 Trie::Trie() : root_(new Node) {}
+
 Trie::~Trie() {
   clear(root_);
 }
