@@ -13,6 +13,8 @@
 
 #include "trie.h"
 
+#define MAX_RESULT_COUNTER 3
+
 const char connInfo[] = "postgresql://hvarz@localhost?port=5432&dbname=mydb";
 
 class SearcherRequest final {
@@ -27,7 +29,7 @@ public:
 
   void setRequest(const std::wstring& request);
 
-  [[nodiscard]] auto getResult() const noexcept -> std::vector<std::wstring>;
+  [[nodiscard]] auto getResult() const noexcept -> std::vector<std::string>;
 
 private:
   std::wstring request_;
@@ -35,20 +37,21 @@ private:
   Trie trie_;
   std::vector<wordsClusterElement> elements_;
   std::set<std::wstring> trieWords_;
+
   static constexpr std::array<wchar_t, 29> forbiddenSymbols{
       L',', L';', L'?', L'!', L':', L'"', L'|', L'\\', L'.', L'/',
       L'(', L')', L'@', L'#', L'$', L'%', L'^', L'&',  L'*', L'1',
       L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9',  L'\n'};
 
 private:
-  [[nodiscard]] static auto getClusterSentences(PGconn *conn,
-                                         int pattern) noexcept
+  [[nodiscard]] static auto getClusterSentences(PGconn *conn, int pattern)
       -> std::vector<clusterElement>;
 
   friend auto fixString(const std::wstring& string) -> std::wstring;
   friend auto parseString(const std::wstring& string) -> std::set<std::wstring>;
   friend auto eraseExtraSpaces(const std::wstring& string) -> std::wstring;
   friend auto charToWString(const char* text) -> std::wstring;
+  void fillFields();
 };
 
 #endif // MEMENTO_SEARCHER_REQUEST_H
