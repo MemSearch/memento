@@ -8,14 +8,20 @@
 #include <vector>
 #include <array>
 
+#include <libpq-fe.h>
+
 #include "trie.h"
+
+const char connInfo[] = "postgresql://hvarz@localhost?port=5432&dbname=mydb";
 
 class SearcherRequest final {
 public:
-  using clusterElement = std::pair<std::wstring, std::wstring>;
+  using wordsClusterElement = std::pair<std::set<std::wstring>, std::string>;
+  using clusterElement  = std::pair<std::wstring, std::string>;
 
 public:
   SearcherRequest() = default;
+  ~SearcherRequest() = default;
   explicit SearcherRequest(const std::wstring& request);
 
   void setRequest(const std::wstring& request);
@@ -25,19 +31,22 @@ public:
 private:
   std::wstring request_;
   Trie trie_;
-  std::vector<clusterElement> elements_;
+  std::vector<wordsClusterElement> elements_;
+  std::set<std::wstring> trieWords_;
   static constexpr std::array<wchar_t, 29> forbiddenSymbols{
       L',', L';', L'?', L'!', L':', L'"', L'|', L'\\', L'.', L'/',
       L'(', L')', L'@', L'#', L'$', L'%', L'^', L'&',  L'*', L'1',
       L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9',  L'\n'};
 
 private:
-  [[nodiscard]] auto getClusterSentences() const noexcept ->
-      std::vector<clusterElement>;
+  [[nodiscard]] auto getClusterSentences(PGconn *conn,
+                                         int pattern) const noexcept
+      -> std::vector<clusterElement>;
 
   friend auto fixString(const std::wstring& string) -> std::wstring;
   friend auto parseString(const std::wstring& string) -> std::set<std::wstring>;
   friend auto eraseExtraSpaces(const std::wstring& string) -> std::wstring;
+  friend auto charToWString(const char* text) -> std::wstring;
 };
 
 #endif // MEMENTO_SEARCHER_REQUEST_H

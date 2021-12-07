@@ -61,3 +61,35 @@ SearcherRequest::SearcherRequest(const std::wstring &request) {
     trie_.add(element);
   }
 }
+
+auto charToWString(const char *text) -> std::wstring {
+  const size_t size = std::strlen(text);
+  std::wstring wstr;
+  if (size > 0) {
+    wstr.resize(size);
+    std::mbstowcs(&wstr[0], text, size);
+  }
+  return wstr;
+}
+
+auto SearcherRequest::getClusterSentences(PGconn *conn,
+                                          int pattern) const noexcept
+    -> std::vector<clusterElement> {
+  std::vector<clusterElement> result;
+  std::string command = "SELECT text, path FROM parsed WHERE template = " +
+                    std::to_string(pattern) + ";";
+
+  PGresult *res = PQexec(conn, command.c_str());
+  if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+    std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
+  } else if (PQntuples(res) != 0) {
+    char buffer[100];
+    strncpy(buffer, PQgetvalue(res, 0, 0), 100);
+    std::wstring text = charToWString(buffer);
+    strncpy(buffer, PQgetvalue(res, 0, 1), 100);
+    std::string path = std::string(buffer);
+    result.emplace_back(text, path);
+  }
+  PQclear(res);
+  return result;
+}
