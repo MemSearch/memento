@@ -15,7 +15,7 @@ Trie::~Trie() {
 }
 
 void Trie::add(const std::wstring &string) noexcept {
-  if (string.empty()) {
+  if (string.empty() || search(string)) {
     return;
   }
   auto tmp = root_;
