@@ -6,8 +6,7 @@ Daemon::Daemon() {
     conn = PQconnectdb(connectionInfo);
 
     if (PQstatus(conn) != CONNECTION_OK) {
-        std::cout << "Connection to database failed: " << PQerrorMessage(conn)
-                  << std::endl;
+        std::cout << "Connection to database failed: " << PQerrorMessage(conn) << "\n";
         PQfinish(conn);
         // TODO: throw exception
     } else {
@@ -32,7 +31,7 @@ std::pair<int, string> Daemon::getPath() {
                   << PQgetvalue(res, 0, 1) << '\n';
         char buffer[100];
         strncpy(buffer, PQgetvalue(res, 0, 0), 100);
-        int id = atoi(buffer);
+        int id = std::stoi(string(buffer));
         std::pair<int, string> result = {id, string(PQgetvalue(res, 0, 1))};
         PQclear(res);
         return result;
@@ -61,7 +60,7 @@ int Daemon::getBiggestID() {
     } else if (PQntuples(res) != 0) {
         char buffer[100];
         strncpy(buffer, PQgetvalue(res, 0, 0), 100);
-        result = atoi(buffer);
+        result = std::stoi(string(buffer));
     }
     PQclear(res);
     return result;
@@ -115,11 +114,28 @@ void Daemon::recognize() {
 }
 
 int Daemon::getTemplateOfPicture(const string& path) {
-    // TODO: определяем шаблон картинки
+    /// TODO: определяем шаблон картинки
     return 1;
 }
 
 string Daemon::getTextInPicture(const string& path) {
-    // TODO: определяем текст картинки
-    return "";
+    string text;
+    auto *ocr = new tesseract::TessBaseAPI();
+
+    // Initialize OCR engine to use English (eng) and The LSTM OCR engine.
+    ocr->Init(nullptr, "eng+rus", tesseract::OEM_LSTM_ONLY);
+
+    // Set Page segmentation mode to PSM_AUTO (3)
+    ocr->SetPageSegMode(tesseract::PSM_AUTO);
+
+    // Open input image using OpenCV
+    Mat im = cv::imread(path, IMREAD_COLOR);
+
+    // Set image data
+    ocr->SetImage(im.data, im.cols, im.rows, 3, static_cast<int>(im.step));
+
+    text = string(ocr->GetUTF8Text());
+
+    ocr->End();
+    return text;
 }
