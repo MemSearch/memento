@@ -114,16 +114,12 @@ void SearcherRequest::fillFields() {
 
   for (auto word : wordsRequest) {
     auto corrections = trie_.getCorrections(word);
-    if (!corrections.has_value()) {
-      trieWords_.insert(word);
+    auto value = corrections.value();
+    if (value.empty()) {
+      continue;
     } else {
-      auto value = corrections.value();
-      if (value.empty()) {
-        break;
-      } else {
-        for (const auto& correction : value) {
-          trieWords_.insert(correction);
-        }
+      for (const auto& correction : value) {
+        trieWords_.insert(correction);
       }
     }
   }

@@ -16,7 +16,7 @@ Trie::~Trie() {
 }
 
 void Trie::add(const std::wstring &string) noexcept {
-  if (string.empty() || search(string)) {
+  if (string.empty()) {
     return;
   }
   auto tmp = root_;
@@ -56,9 +56,6 @@ void Trie::add(const std::wstring &string) noexcept {
     -> std::optional<std::set<std::wstring>> {
   std::set<std::wstring> result;
   auto str = ToLowerCase(string);
-  if (search(str)) {
-    return std::optional<std::set<std::wstring>>();
-  }
   std::set<std::wstring> corrections;
   std::wstring correction;
   recursiveReplace(str, corrections, root_, correction);
@@ -85,6 +82,8 @@ void Trie::recursiveReplace(const std::wstring &string,
         corrections.insert(correction + node.first);
     }
     return;
+  } else if (search(string)) {
+    corrections.insert(string);
   }
 
   for (const auto& node : currentNode->children_) {

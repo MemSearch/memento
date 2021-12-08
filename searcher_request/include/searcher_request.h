@@ -23,7 +23,7 @@ public:
   using clusterElement  = std::pair<std::wstring, std::string>;
 
 public:
-  SearcherRequest() = default;
+  SearcherRequest() = delete;
   ~SearcherRequest() = default;
   explicit SearcherRequest(std::wstring  request, size_t pattern);
 
