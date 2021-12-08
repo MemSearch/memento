@@ -1,0 +1,58 @@
+{% extends 'incl/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="center" id="hello-text">
+    <h1>Let's search some memes?</h1> 
+    <button class="search-button" onclick="viewDiv()">Sure!</button>
+</div>
+
+
+{% comment %} <div class="center">
+    <a href="#" class="button">
+    <span class="button__line button__line__top"></span> 
+    <span class="button__line button__line__right"></span> 
+    <span class="button__line button__line__bottom"></span> 
+    <span class="button__line button__line__left"></span> 
+    Template Button
+    </a>
+</div> {% endcomment %}
+
+<form action="#" id="form" name="form" class="form__body">
+    <div id="mem-search">
+        <h3 class="center">Choose template</h3>
+        <div class="center">
+            <label>
+                <input type="radio" checked class="meme-template" name="templ" value="1">
+                <img src="../static/img/Superman.jpg" class="mem-pic templ-pic">
+            </label>
+            <label>
+                <input type="radio" class="meme-template" name="templ" value="2">
+                <img src="../static/img/Superman.jpg" class="mem-pic templ-pic">
+            </label>
+        </div>
+        <div class="center">
+            <label>
+                <input type="radio" class="meme-template" name="templ" value="3">
+                <img src="../static/img/Superman.jpg" class="mem-pic templ-pic">
+            </label>
+            <label>
+                <input type="radio" class="meme-template" name="templ" value="4">
+                <img src="../static/img/Superman.jpg" class="mem-pic templ-pic">
+            </label>
+        </div>
+        {% comment %} <div class="center">
+            <img src="../static/img/Superman.jpg" class="mem-pic">
+            <img src="../static/img/thanus.jpg" class="mem-pic">
+        </div> {% endcomment %}
+        <h3 class="center">Write here some information to help us find your meme</h3> 
+        <div class="center margin__15px">
+            <input type="text" name="info" id="tags-text" class="tags-text _req" placeholder="describe your mem">
+            <button type="submit" class="search-button">search</button> 
+        </div>
+    </div>
+</form> 
+<div id="mem-info">
+</div>
+{% endblock content %}
+ 
