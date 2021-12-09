@@ -1,0 +1,115 @@
+main > .container {
+    padding: 100px 15px 0;
+}
+
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid blanchedalmond;
+    display: inline-block;
+    padding: 3px 12px;
+    margin: 0px 0px 0px 20px;
+    cursor: pointer;
+}
+
+.main-color {
+    color: blanchedalmond !important;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    background: #333;
+    color: blanchedalmond;
+}
+
+label > input {
+    visibility: hidden;
+    position: absolute;
+}
+
+label > input + img {
+    cursor: pointer;
+    border: 10px solid transparent;
+    transition: all 0.75s ease 0s;
+}
+
+label > input:checked + img {
+    border: 10px solid blanchedalmond;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.search-button {
+    padding: auto;
+    height: 100%;
+    margin: 0px 0px 0px 20px;
+    border-radius: 5px;
+    background: #333;
+    border: 2px solid blanchedalmond;
+    color: blanchedalmond;
+    transition: 0.5s;
+}
+
+.search-button:hover {
+    background: blanchedalmond;
+    color: #333;
+    transition: 0.5s;
+    transition-delay: 0.5s;
+}
+
+.tags-text {
+    width: 300px;
+    border-radius: 5px;
+    background: blanchedalmond;
+    color: #333;
+    outline: none;
+    transition: all 0.5s ease 0s;
+}
+
+.error-info {
+    background:lightcoral;
+    color:crimson;
+    text-align: center;
+    margin: 0px 20px;
+    padding: 0px 5px;
+    border-radius: 5px;
+}
+
+.error-info > h6 {
+    margin: 5px !important;
+}
+
+.mem-pic {
+    height: 270px;
+    margin: 20px;
+    box-shadow: 0 0 6.5px blanchedalmond;
+}
+
+.templ-pic {
+    margin: 20px 30px;
+}
+
+.tags-text:focus {
+    box-shadow: 0 0 10px blanchedalmond;
+}
+
+.tags-text._error {
+    box-shadow: 0 0 10px red;
+}
+
+.margin__15px {
+    margin: 15px;
+}
+
+#mem-search, #mem-info, #file-upload{
+    display: none;
+}
