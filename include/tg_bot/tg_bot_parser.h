@@ -6,45 +6,32 @@
 
 // C++ headers
 #include <string>
+#include <utility>
 #include <vector>
 #include <utility>
+#include <exception>
 
 // tgbot-cpp
 #include <tgbot/tgbot.h>
+#include <tgbot/Api.h>
 
-struct TimeLastMem {
-    TimeLastMem(const size_t hour_,
-                const size_t seconds_,
-                const size_t minutes_) :
-                hour(hour_),
-                minutes(minutes_),
-                seconds(seconds_) {}
+const std::string BOT_TOKEN = "5047232560:AAE6OITFF42DWkgh6Z3sGwM_DY_MTR4iV3M";
 
-    size_t hour;
-    size_t minutes;
-    size_t seconds;
-};
+using namespace TgBot;
 
 class TgBotParser {
 public:
     // Initialization, /start in bot, detach thread of work
-    explicit TgBotParser(std::string apiKey) {}
+    explicit TgBotParser(std::string bot_token) : bot(bot_token),
+                                                  counter(0) {}
+    ~TgBotParser() = default;
 
-    ~TgBotParser();
-
-    // Add new site if it's valid
-    void AddSite(const std::string& chatName) {}
-
-    std::vector<std::string> GetDB() { return {};}
+    void startWorking(ImgDB& db);
 
 private:
-    [[nodiscard]] bool isValid(const std::string& chatName) const { return false; }
-    // Take first 100 memes and then latest of every day
-    void Parse(const std::string& chatName) {}
-    // Write to BD image's URL
-    void WriteImgInDB(std::string imgURL) {}
+    void downloadFile();
 
-    ImgUrlDB db;
-    std::vector<std::pair<std::string, TimeLastMem>> chatsName;
+    TgBot::Bot bot;
+    std::atomic<uint64_t> counter;
 };
 #endif //C_C_TG_BOT_PARSER_H
