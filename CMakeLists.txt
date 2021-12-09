@@ -10,18 +10,10 @@ find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Boost COMPONENTS system REQUIRED)
 find_package(CURL)
+find_package(PostgreSQL REQUIRED)
 
 # Add Telegram API
 add_subdirectory(third_party/tgbot-cpp)
-
-# SQLite3
-add_library(db SHARED
-        ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3/sqlite3.c)
-target_include_directories(db PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/SQLite3)
-target_link_libraries(db
-        PUBLIC Threads::Threads
-        dl)
 
 # bot
 add_library(img_url_bot SHARED
@@ -47,9 +39,18 @@ target_link_libraries(img_url_bot
 add_library(img_storage SHARED
         ${CMAKE_CURRENT_SOURCE_DIR}/src/img_url_db.cpp)
 target_include_directories(img_storage
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${PostgreSQL_INCLUDE_DIRS})
 target_link_libraries(img_storage
-        db)
+        PUBLIC ${PostgreSQL_LIBRARIES})
+
+# main
+add_executable(main
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+target_include_directories(main
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(main
+        img_url_bot)
 
 #Tests
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest)
