@@ -14,6 +14,15 @@ auto eraseExtraSpaces(const std::wstring &string) -> std::wstring {
   return result;
 }
 
+auto toLowerCase(const std::wstring &string) noexcept -> std::wstring {
+  thread_local std::locale loc{""};
+  std::wstring result;
+  for (const auto& symbol : string) {
+    result += std::tolower(symbol, loc);
+  }
+  return result;
+}
+
 auto fixString(const std::wstring &string) -> std::wstring {
   std::wstring result;
   bool isBan;
@@ -82,6 +91,7 @@ auto SearcherRequest::getClusterSentences(PGconn *conn,
     for (size_t i = 0; i < PQntuples(res); ++i) {
       strncpy(buffer, PQgetvalue(res, i, 0), 100);
       std::wstring text = charToWString(buffer);
+      text = toLowerCase(text);
       strncpy(buffer, PQgetvalue(res, i, 1), 100);
       std::string path = std::string(buffer);
       result.emplace_back(text, path);

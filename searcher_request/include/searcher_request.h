@@ -51,6 +51,7 @@ private:
   friend auto parseString(const std::wstring& string) -> std::set<std::wstring>;
   friend auto eraseExtraSpaces(const std::wstring& string) -> std::wstring;
   friend auto charToWString(const char* text) -> std::wstring;
+  friend auto toLowerCase(const std::wstring string) noexcept -> std::wstring;
   void fillFields();
 };
 
