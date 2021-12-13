@@ -67,8 +67,9 @@ int Daemon::getBiggestID() {
 }
 
 void Daemon::insertRecord(int id, const string& path, int pattern , const string& text) {
+    std::string newPath = ".." + string(path.begin() + 10, path.end());
     const string command =
-            "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + path + "', " + std::to_string(pattern) + ", '" + text + "');";
+            "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + newPath + "', " + std::to_string(pattern) + ", '" + text + "');";
     PGresult *res = PQexec(conn, command.c_str());
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
         std::cout << "Insert into table failed: " << PQresultErrorMessage(res)
@@ -95,8 +96,8 @@ void Daemon::recognize() {
     auto signal = std::signal(SIGINT, signalHandler);
     while (signal != SIG_IGN) {
         if (isEmpty()) {
-            std::cout << "Sleep for 1 sec\n";
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            //std::cout << "Sleep for 5 sec\n";
+            std::this_thread::sleep_for(std::chrono::seconds(5));
             continue;
         }
         auto record = getPath();
@@ -129,6 +130,7 @@ string Daemon::getTextInPicture(const string& path) {
     ocr->SetPageSegMode(tesseract::PSM_AUTO);
 
     // Open input image using OpenCV
+    std::cout << "reading from " << path << "\n";
     Mat im = cv::imread(path, IMREAD_COLOR);
 
     // Set image data

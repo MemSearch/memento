@@ -3,18 +3,18 @@
 #include <utility>
 #include "trie.h"
 
-auto eraseExtraSpaces(const std::wstring &string) -> std::wstring {
+auto eraseExtraSpaces(const std::string &string) -> std::string {
   auto result = string;
   result.erase(std::unique(result.begin(), result.end(),
-                           [](wchar_t l, wchar_t r) {
+                           [](char l, char r) {
                              return std::isspace(l) && l == r;
                            }),
                result.end());
   return result;
 }
 
-auto fixString(const std::wstring &string) -> std::wstring {
-  std::wstring result;
+auto fixString(const std::string &string) -> std::string {
+  std::string result;
   bool isBan;
   for (auto& symbol : string) {
     isBan = false;
@@ -33,9 +33,9 @@ auto fixString(const std::wstring &string) -> std::wstring {
 }
 
 
-auto parseString(const std::wstring &string) -> std::set<std::wstring> {
-  std::set<std::wstring> result;
-  std::wstring word;
+auto parseString(const std::string &string) -> std::set<std::string> {
+  std::set<std::string> result;
+  std::string word;
   auto resultString = fixString(string);
 
   auto beginIter = resultString.begin();
@@ -45,7 +45,7 @@ auto parseString(const std::wstring &string) -> std::set<std::wstring> {
     spaceIter = std::find(beginIter, resultString.end(), ' ');
     word = {beginIter, spaceIter};
     if (!word.empty()) {
-      result.insert(std::wstring(beginIter, spaceIter));
+      result.insert(std::string(beginIter, spaceIter));
     }
     if (spaceIter != string.end()) {
       beginIter = std::next(spaceIter);
@@ -55,15 +55,15 @@ auto parseString(const std::wstring &string) -> std::set<std::wstring> {
   return result;
 }
 
-auto charToWString(const char *text) -> std::wstring {
-  const size_t size = std::strlen(text);
-  std::wstring wstr;
-  if (size > 0) {
-    wstr.resize(size);
-    std::mbstowcs(&wstr[0], text, size);
-  }
-  return wstr;
-}
+//auto charToWString(const char *text) -> std::string {
+//  const size_t size = std::strlen(text);
+//  std::string wstr;
+//  if (size > 0) {
+//    wstr.resize(size);
+//    std::mbstowcs(&wstr[0], text, size);
+//  }
+//  return wstr;
+//}
 
 auto SearcherRequest::getClusterSentences(PGconn *conn,
                                           int pattern)
@@ -80,7 +80,8 @@ auto SearcherRequest::getClusterSentences(PGconn *conn,
     char buffer[100];
     for (int i = 0; i < PQntuples(res); ++i) {
       strncpy(buffer, PQgetvalue(res, i, 0), 100);
-      std::wstring text = charToWString(buffer);
+      std::cout << "text: " << std::string(buffer) << "\n";
+      std::string text = std::string(buffer);
       strncpy(buffer, PQgetvalue(res, i, 1), 100);
       std::string path = std::string(buffer);
       result.emplace_back(text, path);
@@ -128,13 +129,14 @@ void SearcherRequest::fillFields() {
   }
 }
 
-SearcherRequest::SearcherRequest(std::wstring request,
+SearcherRequest::SearcherRequest(std::string request,
                                  const size_t pattern)
     : request_(std::move(request)), pattern_(pattern) {
+    std::cout << "request:" << request_ << "\n";
   fillFields();
 }
 
-void SearcherRequest::setRequest(const std::wstring &request) {
+void SearcherRequest::setRequest(const std::string &request) {
   request_ = request;
   trie_.clearFull();
   elements_.clear();
@@ -170,6 +172,10 @@ auto SearcherRequest::getResult() const noexcept -> std::vector<std::string> {
         break;
       }
     }
+  }
+
+  for (const auto& path : result) {
+      std::cout << path << "\n";
   }
   return result;
 }

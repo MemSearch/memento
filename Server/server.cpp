@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
         size_t templateNum;
         ss >> templateNum;
         auto req = jsonBody["text"];
-        std::wstring wreq;
+        std::string wreq;
         for (const auto& symbol : req) {
             wchar_t symb = symbol;
             wreq.push_back(symb);
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
              SearcherRequest request(wreq, templateNum);
              urls = request.getResult();
         } catch (std::runtime_error& e) {
-            std::cerr << e.what() << "\n";
+            std::cerr << "error : " << e.what() << "\n";
         }
 
 //        urls = someFunc();

@@ -20,5 +20,6 @@ void ImgDB::insertPath(int id, const std::string& path) {
         std::cout << "Insert into table failed: " << PQresultErrorMessage(res)
                   << std::endl;
     }
+    std::cout << "insert into new_table path " << path << "\n";
     PQclear(res);
 }

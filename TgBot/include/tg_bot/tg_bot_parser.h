@@ -32,6 +32,6 @@ private:
     void downloadFile();
 
     TgBot::Bot bot;
-    std::atomic<uint64_t> counter;
+    uint64_t counter;
 };
 #endif //C_C_TG_BOT_PARSER_H

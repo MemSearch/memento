@@ -9,8 +9,8 @@ void TgBotParser::startWorking(ImgDB& db) {
 
     {
         downloadFile();
-        db.insertPath(counter, "../img_storage/image_" + std::to_string(counter) + ".jpg");
-        ++counter;
+        db.insertPath(counter, "../../Site/static/img/image_" + std::to_string(counter) + ".jpg");
+//        ++counter;
     }
 
     // demon work
@@ -36,7 +36,7 @@ void TgBotParser::downloadFile() {
             auto download = bot.getApi().downloadFile(file_info->filePath);
 
             // Additional check for errors
-            std::ofstream out("../img_storage/image_" + std::to_string(counter) + ".jpg", std::ios::binary);
+            std::ofstream out("../../Site/static/img/image_" + std::to_string(counter) + ".jpg", std::ios::binary);
             out << download;
             out.close();
         }
