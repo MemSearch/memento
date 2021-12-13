@@ -38,10 +38,10 @@ private:
   std::vector<wordsClusterElement> elements_;
   std::set<std::string> trieWords_;
 
-  static constexpr std::array<char, 29> forbiddenSymbols{
+  static constexpr std::array<char, 31> forbiddenSymbols{
       ',', ';', '?', '!', ':', '"', '|', '\\', '.', '/',
       '(', ')', '@', '#', '$', '%', '^', '&',  '*', '1',
-      '2', '3', '4', '5', '6', '7', '8', '9',  '\n'};
+      '2', '3', '4', '5', '6', '7', '8', '9',  '\n', '\xe2', '\xa9'};
 
 private:
   [[nodiscard]] static auto getClusterSentences(PGconn *conn, int pattern)
@@ -50,7 +50,7 @@ private:
   friend auto fixString(const std::string& string) -> std::string;
   friend auto parseString(const std::string& string) -> std::set<std::string>;
   friend auto eraseExtraSpaces(const std::string& string) -> std::string;
-//  friend auto charToWString(const char* text) -> std::string;
+  friend auto toLowerCase(const std::string string) noexcept -> std::string;
   void fillFields();
 };
 

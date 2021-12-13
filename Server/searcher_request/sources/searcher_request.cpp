@@ -13,6 +13,15 @@ auto eraseExtraSpaces(const std::string &string) -> std::string {
   return result;
 }
 
+auto toLowerCase(const std::string &string) noexcept -> std::string {
+  thread_local std::locale loc{""};
+  std::string result;
+  for (const auto& symbol : string) {
+    result += std::tolower(symbol, loc);
+  }
+  return result;
+}
+
 auto fixString(const std::string &string) -> std::string {
   std::string result;
   bool isBan;
@@ -55,15 +64,6 @@ auto parseString(const std::string &string) -> std::set<std::string> {
   return result;
 }
 
-//auto charToWString(const char *text) -> std::string {
-//  const size_t size = std::strlen(text);
-//  std::string wstr;
-//  if (size > 0) {
-//    wstr.resize(size);
-//    std::mbstowcs(&wstr[0], text, size);
-//  }
-//  return wstr;
-//}
 
 auto SearcherRequest::getClusterSentences(PGconn *conn,
                                           int pattern)
@@ -78,10 +78,9 @@ auto SearcherRequest::getClusterSentences(PGconn *conn,
     throw std::runtime_error("Select failed: ");
   } else if (PQntuples(res) != 0) {
     char buffer[100];
-    for (int i = 0; i < PQntuples(res); ++i) {
+    for (size_t i = 0; i < PQntuples(res); ++i) {
       strncpy(buffer, PQgetvalue(res, i, 0), 100);
-      std::cout << "text: " << std::string(buffer) << "\n";
-      std::string text = std::string(buffer);
+      std::string text = toLowerCase(buffer);
       strncpy(buffer, PQgetvalue(res, i, 1), 100);
       std::string path = std::string(buffer);
       result.emplace_back(text, path);
@@ -132,7 +131,6 @@ void SearcherRequest::fillFields() {
 SearcherRequest::SearcherRequest(std::string request,
                                  const size_t pattern)
     : request_(std::move(request)), pattern_(pattern) {
-    std::cout << "request:" << request_ << "\n";
   fillFields();
 }
 
@@ -172,10 +170,6 @@ auto SearcherRequest::getResult() const noexcept -> std::vector<std::string> {
         break;
       }
     }
-  }
-
-  for (const auto& path : result) {
-      std::cout << path << "\n";
   }
   return result;
 }
