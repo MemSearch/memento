@@ -19,24 +19,24 @@ const char connInfo[] = "postgresql://hvarz@localhost?port=5432&dbname=mydb";
 
 class SearcherRequest final {
 public:
-  using wordsClusterElement = std::pair<std::set<std::wstring>, std::string>;
-  using clusterElement  = std::pair<std::wstring, std::string>;
+  using wordsClusterElement = std::pair<std::set<std::string>, std::string>;
+  using clusterElement  = std::pair<std::string, std::string>;
 
 public:
   SearcherRequest() = delete;
   ~SearcherRequest() = default;
-  explicit SearcherRequest(std::wstring  request, size_t pattern);
+  explicit SearcherRequest(std::string  request, size_t pattern);
 
-  void setRequest(const std::wstring& request);
+  void setRequest(const std::string& request);
 
   [[nodiscard]] auto getResult() const noexcept -> std::vector<std::string>;
 
 private:
-  std::wstring request_;
+  std::string request_;
   size_t pattern_ = 0;
   Trie trie_;
   std::vector<wordsClusterElement> elements_;
-  std::set<std::wstring> trieWords_;
+  std::set<std::string> trieWords_;
 
   static constexpr std::array<wchar_t, 29> forbiddenSymbols{
       L',', L';', L'?', L'!', L':', L'"', L'|', L'\\', L'.', L'/',
@@ -47,11 +47,10 @@ private:
   [[nodiscard]] static auto getClusterSentences(PGconn *conn, int pattern)
       -> std::vector<clusterElement>;
 
-  friend auto fixString(const std::wstring& string) -> std::wstring;
-  friend auto parseString(const std::wstring& string) -> std::set<std::wstring>;
-  friend auto eraseExtraSpaces(const std::wstring& string) -> std::wstring;
-  friend auto charToWString(const char* text) -> std::wstring;
-  friend auto toLowerCase(const std::wstring string) noexcept -> std::wstring;
+  friend auto fixString(const std::string& string) -> std::string;
+  friend auto parseString(const std::string& string) -> std::set<std::string>;
+  friend auto eraseExtraSpaces(const std::string& string) -> std::string;
+  friend auto toLowerCase(const std::string string) noexcept -> std::string;
   void fillFields();
 };
 

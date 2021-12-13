@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 struct Node {
-  std::unordered_map<wchar_t, Node *> children_;
+  std::unordered_map<char, Node *> children_;
   bool isEnd_ = false;
   Node() : isEnd_(false) {}
   explicit Node(bool isEnd) noexcept : isEnd_(isEnd) {}

@@ -11,19 +11,19 @@
 
 #include "node.h"
 
-auto ToLowerCase(const std::wstring &string) noexcept -> std::wstring;
+auto ToLowerCase(const std::string &string) noexcept -> std::string;
 
 class Trie {
 public:
   Trie();
   ~Trie();
 
-  void add(const std::wstring &string) noexcept;
+  void add(const std::string &string) noexcept;
 
-  [[nodiscard]] auto search(const std::wstring &string) const noexcept -> bool;
+  [[nodiscard]] auto search(const std::string &string) const noexcept -> bool;
 
-  [[maybe_unused]] auto getCorrections(std::wstring &string) const noexcept
-      -> std::optional<std::set<std::wstring>>;
+  [[maybe_unused]] auto getCorrections(std::string &string) const noexcept
+      -> std::optional<std::set<std::string>>;
 
   void clearFull() noexcept;
 
@@ -32,9 +32,9 @@ private:
 
 
 private:
-  void recursiveReplace(const std::wstring &string,
-                        std::set<std::wstring> &corrections, Node *currentNode,
-                        const std::wstring &correction,
+  void recursiveReplace(const std::string &string,
+                        std::set<std::string> &corrections, Node *currentNode,
+                        const std::string &correction,
                         const size_t counter = 0,
                         size_t errorCount = 0) const noexcept;
 

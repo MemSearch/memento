@@ -1,8 +1,8 @@
 #include "trie.h"
 
-auto ToLowerCase(const std::wstring &string) noexcept -> std::wstring {
+auto ToLowerCase(const std::string &string) noexcept -> std::string {
   thread_local std::locale loc{""};
-  std::wstring result;
+  std::string result;
   for (const auto& symbol : string) {
     result += std::tolower(symbol, loc);
   }
@@ -15,12 +15,12 @@ Trie::~Trie() {
   clear(root_);
 }
 
-void Trie::add(const std::wstring &string) noexcept {
+void Trie::add(const std::string &string) noexcept {
   if (string.empty()) {
     return;
   }
   auto tmp = root_;
-  std::wstring str = ToLowerCase(string);
+  std::string str = ToLowerCase(string);
   size_t i = 0;
   for (const auto& symbol : str) {
     if (tmp->children_.count(symbol) == 0) {
@@ -38,7 +38,7 @@ void Trie::add(const std::wstring &string) noexcept {
   }
 }
 
-[[nodiscard]] auto Trie::search(const std::wstring &string) const noexcept ->
+[[nodiscard]] auto Trie::search(const std::string &string) const noexcept ->
     bool {
   auto *node = root_;
   for (auto key_ : string) {
@@ -52,19 +52,19 @@ void Trie::add(const std::wstring &string) noexcept {
   return node->isEnd_;
 }
 
-[[maybe_unused]] auto Trie::getCorrections(std::wstring &string) const noexcept
-    -> std::optional<std::set<std::wstring>> {
-  std::set<std::wstring> result;
+[[maybe_unused]] auto Trie::getCorrections(std::string &string) const noexcept
+    -> std::optional<std::set<std::string>> {
+  std::set<std::string> result;
   auto str = ToLowerCase(string);
-  std::set<std::wstring> corrections;
-  std::wstring correction;
+  std::set<std::string> corrections;
+  std::string correction;
   recursiveReplace(str, corrections, root_, correction);
   return std::make_optional(corrections);
 }
 
-void Trie::recursiveReplace(const std::wstring &string,
-                      std::set<std::wstring> &corrections, Node *currentNode,
-                      const std::wstring &correction,
+void Trie::recursiveReplace(const std::string &string,
+                      std::set<std::string> &corrections, Node *currentNode,
+                      const std::string &correction,
                       const size_t counter, size_t errorCount) const noexcept {
 
   if (errorCount == 2) {
