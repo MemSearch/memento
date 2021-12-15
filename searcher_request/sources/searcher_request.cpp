@@ -1,6 +1,5 @@
 #include "searcher_request.h"
 
-#include <utility>
 #include "trie.h"
 
 
@@ -23,18 +22,17 @@ auto toLowerCase(const std::string &string) noexcept -> std::string {
   return result;
 }
 
+auto isLetter(const char symbol) noexcept -> bool {
+  return (symbol >= 65 && symbol <= 90) || (symbol >= 97 && symbol <= 122)
+         || (symbol >= -64 && symbol <= -1);
+}
+
 auto fixString(const std::string &string) -> std::string {
   std::string result;
-  bool isBan;
   for (auto& symbol : string) {
-    isBan = false;
-    for (const auto& banSymbol : SearcherRequest::forbiddenSymbols) {
-      if (symbol == banSymbol) {
-        isBan = true;
-        break;
-      }
-    }
-    if (!isBan) {
+    if (!isLetter(symbol)) {
+      result.push_back(' ');
+    } else {
       result.push_back(symbol);
     }
   }

@@ -38,11 +38,6 @@ private:
   std::vector<wordsClusterElement> elements_;
   std::set<std::string> trieWords_;
 
-  static constexpr std::array<wchar_t, 29> forbiddenSymbols{
-      L',', L';', L'?', L'!', L':', L'"', L'|', L'\\', L'.', L'/',
-      L'(', L')', L'@', L'#', L'$', L'%', L'^', L'&',  L'*', L'1',
-      L'2', L'3', L'4', L'5', L'6', L'7', L'8', L'9',  L'\n'};
-
 private:
   [[nodiscard]] static auto getClusterSentences(PGconn *conn, int pattern)
       -> std::vector<clusterElement>;
@@ -50,7 +45,7 @@ private:
   friend auto fixString(const std::string& string) -> std::string;
   friend auto parseString(const std::string& string) -> std::set<std::string>;
   friend auto eraseExtraSpaces(const std::string& string) -> std::string;
-  friend auto toLowerCase(const std::string string) noexcept -> std::string;
+  friend auto toLowerCase(const std::string& string) noexcept -> std::string;
   void fillFields();
 };
 
