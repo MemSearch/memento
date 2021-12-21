@@ -16,8 +16,8 @@ using namespace cv;
 
 class Daemon {
 public:
-    Daemon();
-    Daemon(PGconn *connection) = delete;
+    explicit Daemon(const string& connInfo);
+    Daemon() = delete;
     ~Daemon() {
         PQfinish(conn);
     }

@@ -1,9 +1,7 @@
 #include "daemon.h"
 
-Daemon::Daemon() {
-    const char connectionInfo[] =
-            "postgresql://ezury@localhost?port=5432&dbname=mydb";
-    conn = PQconnectdb(connectionInfo);
+Daemon::Daemon(const string& connInfo) {
+    conn = PQconnectdb(connInfo.c_str());
 
     if (PQstatus(conn) != CONNECTION_OK) {
         std::cout << "Connection to database failed: " << PQerrorMessage(conn) << "\n";
