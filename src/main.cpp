@@ -9,7 +9,7 @@ int main() {
     ImgDB db;
 
     TgBotParser bot(BOT_TOKEN);
-    bot.startWorking(db);
+    bot.startWorking();
     return 0;
 }
 

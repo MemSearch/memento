@@ -7,11 +7,7 @@ void TgBotParser::startWorking(ImgDB& db) {
         bot.getApi().sendMessage(message->chat->id, "Hi, i'm bot parser photo!");
     });
 
-    {
-        downloadFile();
-        db.insertPath(counter, "../img_storage/image_" + std::to_string(counter) + ".jpg");
-        ++counter;
-    }
+    downloadFile(db);
 
     // demon work
     try {
@@ -27,9 +23,9 @@ void TgBotParser::startWorking(ImgDB& db) {
     }
 }
 
-void TgBotParser::downloadFile() {
+void TgBotParser::downloadFile(ImgDB& db) {
     // Checking the photo for validity
-    bot.getEvents().onAnyMessage([this](const Message::Ptr& message) {
+    bot.getEvents().onAnyMessage([this, &db](const Message::Ptr& message) {
         if (!message->photo.empty()) {
             // take file info about photo with max size!
             auto file_info = bot.getApi().getFile(message->photo[message->photo.size() - 1]->fileId);
@@ -39,6 +35,9 @@ void TgBotParser::downloadFile() {
             std::ofstream out("../img_storage/image_" + std::to_string(counter) + ".jpg", std::ios::binary);
             out << download;
             out.close();
+
+            db.insertPath(counter, "../img_storage/image_" + std::to_string(counter) + ".jpg");
+            ++counter;
         }
     });
 }

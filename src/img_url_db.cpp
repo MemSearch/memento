@@ -2,7 +2,7 @@
 #include <unsorted_img_storage/img_url_db.h>
 
 ImgDB::ImgDB() {
-    const char connInfo[] = "hostaddr=127.0.0.1 dbname=paths user=postgres password=";
+    const char connInfo[] = "hostaddr=127.0.0.1 dbname=paths user=postgres";
     conn = PQconnectdb(connInfo);
     if (PQstatus(conn) != CONNECTION_OK) {
         std::cout << "Connection to database failed: " << PQerrorMessage(conn) << "\n";

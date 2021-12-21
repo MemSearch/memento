@@ -29,9 +29,9 @@ public:
     void startWorking(ImgDB& db);
 
 private:
-    void downloadFile();
+    void downloadFile(ImgDB& db);
 
     TgBot::Bot bot;
-    std::atomic<uint64_t> counter;
+    uint64_t counter;
 };
 #endif //C_C_TG_BOT_PARSER_H
