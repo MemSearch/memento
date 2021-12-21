@@ -14,3 +14,6 @@
 ![UML](uml/img.png)
 
 
+## Принцип работы
+
+![UML-diagram](UML/UML.png)
