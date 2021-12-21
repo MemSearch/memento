@@ -14,10 +14,9 @@ auto eraseExtraSpaces(const std::string &string) -> std::string {
 }
 
 auto toLowerCase(const std::string &string) noexcept -> std::string {
-  thread_local std::locale loc{""};
   std::string result;
   for (const auto& symbol : string) {
-    result += std::tolower(symbol, loc);
+    result += std::tolower(symbol);
   }
   return result;
 }
@@ -29,14 +28,13 @@ auto isLetter(const char symbol) noexcept -> bool {
 
 auto fixString(const std::string &string) -> std::string {
   std::string result;
-  for (auto& symbol : string) {
+  std::for_each(string.begin(), string.end(), [&result](char symbol) {
     if (!isLetter(symbol)) {
       result.push_back(' ');
     } else {
       result.push_back(symbol);
     }
-  }
-
+  });
   return eraseExtraSpaces(result);
 }
 
@@ -76,13 +74,12 @@ auto SearcherRequest::getClusterSentences(PGconn *conn,
   if (PQresultStatus(res) != PGRES_TUPLES_OK) {
     throw std::runtime_error("Select failed: ");
   } else if (PQntuples(res) != 0) {
-    char buffer[100];
+    std::string sentence;
+    std::string path;
     for (size_t i = 0; i < PQntuples(res); ++i) {
-      strncpy(buffer, PQgetvalue(res, i, 0), 100);
-      std::string text = toLowerCase(buffer);
-      strncpy(buffer, PQgetvalue(res, i, 1), 100);
-      std::string path = std::string(buffer);
-      result.emplace_back(text, path);
+      sentence = toLowerCase(std::string(PQgetvalue(res, i, 0)));
+      path = std::string(PQgetvalue(res, i, 1));
+      result.emplace_back(sentence, path);
     }
   }
   PQclear(res);
@@ -127,9 +124,9 @@ void SearcherRequest::fillFields() {
   }
 }
 
-SearcherRequest::SearcherRequest(std::string request,
+SearcherRequest::SearcherRequest(const std::string& request,
                                  const size_t pattern)
-    : request_(std::move(request)), pattern_(pattern) {
+    : request_(request), pattern_(pattern) {
   fillFields();
 }
 

@@ -25,7 +25,7 @@ public:
 public:
   SearcherRequest() = delete;
   ~SearcherRequest() = default;
-  explicit SearcherRequest(std::string  request, size_t pattern);
+  explicit SearcherRequest(const std::string& request, size_t pattern);
 
   void setRequest(const std::string& request);
 

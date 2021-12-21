@@ -4,7 +4,7 @@ using namespace std;
 
 
 int main() {
-  SearcherRequest request(L"are you winning son?", 1);
+  SearcherRequest request("are you winning son?", 1);
   auto vector = request.getResult();
 
   for (const auto& path : vector) {
