@@ -1,12 +1,33 @@
 main > .container {
-    padding: 100px 15px 0;
+    padding: 100px 0px 0;
+    max-width: 100%;
+}
+
+/*main {*/
+/*    font-family: cursive;*/
+/*}*/
+
+#mem-btn {
+    display: none;
+}
+
+._4em {
+    font-size: 4em;
+}
+
+._3em {
+    font-size: 2.2em;
 }
 
 input[type="file"] {
     display: none;
 }
+
 .custom-file-upload {
-    border: 1px solid blanchedalmond;
+    height: 44px;
+    font-size: 1.4em;
+    border: 2px solid blanchedalmond;
+    border-radius: 5px;
     display: inline-block;
     padding: 3px 12px;
     margin: 0px 0px 0px 20px;
@@ -49,26 +70,37 @@ label > input:checked + img {
 }
 
 .search-button {
-    padding: auto;
-    height: 100%;
+    height: 44px;
+    font-size: 1.4em;
     margin: 0px 0px 0px 20px;
     border-radius: 5px;
     background: #333;
     border: 2px solid blanchedalmond;
     color: blanchedalmond;
-    transition: 0.5s;
+    transition: 0.3s;
+}
+.up-margin {
+    margin: 30px 0px 0px 0px;
+}
+.left-margin {
+    margin: 0px 30px 0px 0px;
+}
+.right-margin {
+    margin: 0px 0px 0px 30px;
 }
 
 .search-button:hover {
     background: blanchedalmond;
     color: #333;
-    transition: 0.5s;
-    transition-delay: 0.5s;
+    transition: 0.3s;
+    transition-delay: 0.3s;
 }
 
 .tags-text {
-    width: 300px;
-    border-radius: 5px;
+    width: 60%;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 1.6em;
     background: blanchedalmond;
     color: #333;
     outline: none;
@@ -89,7 +121,7 @@ label > input:checked + img {
 }
 
 .mem-pic {
-    height: 270px;
+    height: 300px;
     margin: 20px;
     box-shadow: 0 0 6.5px blanchedalmond;
 }
@@ -111,5 +143,5 @@ label > input:checked + img {
 }
 
 #mem-search, #mem-info, #file-upload{
-    display: none;
+    /* display: none; */
 }
