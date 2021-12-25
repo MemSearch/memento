@@ -4,35 +4,29 @@
 #include <iostream>
 #include <libpq-fe.h>
 #include <tesseract/baseapi.h>
-#include <opencv2/opencv.hpp>
 #include <cstdlib>
 #include <string>
 #include <thread>
 #include <chrono>
 #include <csignal>
 
-using std::string;
-using namespace cv;
-
 class Daemon {
 public:
-    Daemon();
-    Daemon(PGconn *connection) = delete;
-    ~Daemon() {
-        PQfinish(conn);
-    }
-    std::pair<int, string> getPath();
-    void removeRecord(const std::pair<int, string>& record);
+    explicit Daemon(const std::string& connInfo);
+    Daemon() = delete;
+    ~Daemon() {}
+    std::pair<int, std::string> getPath();
+    void removeRecord(const std::pair<int, std::string>& record);
     int getBiggestID();
-    void insertRecord(int id, const string& path, int pattern , const string& text);
+    void insertRecord(int id, const std::string& path, int pattern , const std::string& text);
     bool isEmpty();
     void recognize();
 
 private:
-    int getTemplateOfPicture(const string& path);
-    string getTextInPicture(const string& path);
+    int getTemplateOfPicture(const std::string& path);
+    std::string getTextInPicture(const std::string& path);
 
-    PGconn *conn;
+    std::unique_ptr<PGconn, void(*)(PGconn *)> conn;
 };
 
 #endif //PROJECT_DAEMON_H

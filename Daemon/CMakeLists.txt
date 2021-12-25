@@ -11,21 +11,21 @@ find_package(PostgreSQL REQUIRED)
 
 link_directories( ${TESSERACT_LIBRARY_DIRS} )
 
-add_library(libs SHARED
+add_library(dependencies_for_daemon SHARED
         ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp)
-target_include_directories(libs PUBLIC
+target_include_directories(dependencies_for_daemon PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/daemon
         ${PostgreSQL_INCLUDE_DIRS}
         ${TESSERACT_INCLUDE_DIRS} )
-target_link_libraries(libs PUBLIC
+target_link_libraries(dependencies_for_daemon PUBLIC
         ${PostgreSQL_LIBRARIES}
         ${OpenCV_LIBS}
         ${TESSERACT_LIBRARIES})
 
 # daemon
-add_executable(daemon main.cpp daemon/daemon.cpp)
+add_executable(daemon main.cpp)
 target_include_directories(daemon PRIVATE daemon)
-target_link_libraries(daemon PRIVATE libs)
+target_link_libraries(daemon PRIVATE dependencies_for_daemon)
 
 # gtest
 include(FetchContent)

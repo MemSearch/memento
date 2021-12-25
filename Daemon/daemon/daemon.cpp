@@ -1,14 +1,12 @@
 #include "daemon.h"
+#include <opencv2/opencv.hpp>
 
-Daemon::Daemon() {
-    const char connectionInfo[] =
-            "postgresql://ezury@localhost?port=5432&dbname=mydb";
-    conn = PQconnectdb(connectionInfo);
+Daemon::Daemon(const std::string& connInfo) : conn(PQconnectdb(connInfo.c_str()), PQfinish) {
 
-    if (PQstatus(conn) != CONNECTION_OK) {
-        std::cout << "Connection to database failed: " << PQerrorMessage(conn) << "\n";
-        PQfinish(conn);
-        // TODO: throw exception
+    if (PQstatus(conn.get()) != CONNECTION_OK) {
+        std::cout << "Connection to database failed: " << PQerrorMessage(conn.get()) << "\n";
+        PQfinish(conn.get());
+        throw std::invalid_argument("Connection to database failed");
     } else {
         std::cout << "Connection to database succeed." << std::endl;
     }
@@ -19,8 +17,8 @@ static void signalHandler(int signum) {
     exit(signum);
 }
 
-std::pair<int, string> Daemon::getPath() {
-    PGresult *res = PQexec(conn, "SELECT id, name FROM new_table ORDER BY id DESC limit 1;");
+std::pair<int, std::string> Daemon::getPath() {
+    PGresult *res = PQexec(conn.get(), "SELECT id, name FROM new_table ORDER BY id DESC limit 1;");
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
         std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
     } else {
@@ -31,8 +29,8 @@ std::pair<int, string> Daemon::getPath() {
                   << PQgetvalue(res, 0, 1) << '\n';
         char buffer[100];
         strncpy(buffer, PQgetvalue(res, 0, 0), 100);
-        int id = std::stoi(string(buffer));
-        std::pair<int, string> result = {id, string(PQgetvalue(res, 0, 1))};
+        int id = std::stoi(std::string(buffer));
+        std::pair<int, std::string> result = {id, std::string(PQgetvalue(res, 0, 1))};
         PQclear(res);
         return result;
     }
@@ -40,10 +38,10 @@ std::pair<int, string> Daemon::getPath() {
     return {0, ""};
 }
 
-void Daemon::removeRecord(const std::pair<int, string>& record) {
-    const string command =
+void Daemon::removeRecord(const std::pair<int, std::string>& record) {
+    const std::string command =
             "DELETE FROM new_table WHERE id = " + std::to_string(record.first) + " AND name = '" + record.second + "'";
-    PGresult *res = PQexec(conn, command.c_str());
+    PGresult *res = PQexec(conn.get(), command.c_str());
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
         std::cout << "Delete from table failed: " << PQresultErrorMessage(res)
                   << std::endl;
@@ -54,23 +52,22 @@ void Daemon::removeRecord(const std::pair<int, string>& record) {
 int Daemon::getBiggestID() {
     int result = 0;
 
-    PGresult *res = PQexec(conn, "SELECT id FROM new_table ORDER BY id DESC limit 1;");
+    PGresult *res = PQexec(conn.get(), "SELECT id FROM new_table ORDER BY id DESC limit 1;");
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
         std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
     } else if (PQntuples(res) != 0) {
         char buffer[100];
         strncpy(buffer, PQgetvalue(res, 0, 0), 100);
-        result = std::stoi(string(buffer));
+        result = std::stoi(std::string(buffer));
     }
     PQclear(res);
     return result;
 }
 
-void Daemon::insertRecord(int id, const string& path, int pattern , const string& text) {
-    std::string newPath = ".." + string(path.begin() + 10, path.end());
-    const string command =
-            "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + newPath + "', " + std::to_string(pattern) + ", '" + text + "');";
-    PGresult *res = PQexec(conn, command.c_str());
+void Daemon::insertRecord(int id, const std::string& path, int pattern , const std::string& text) {
+    const std::string command =
+            "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + path + "', " + std::to_string(pattern) + ", '" + text + "');";
+    PGresult *res = PQexec(conn.get(), command.c_str());
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
         std::cout << "Insert into table failed: " << PQresultErrorMessage(res)
                   << std::endl;
@@ -81,7 +78,7 @@ void Daemon::insertRecord(int id, const string& path, int pattern , const string
 bool Daemon::isEmpty() {
     bool empty = true;
 
-    PGresult *res = PQexec(conn, "SELECT * FROM new_table ORDER BY id DESC limit 1;");
+    PGresult *res = PQexec(conn.get(), "SELECT * FROM new_table ORDER BY id DESC limit 1;");
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
         std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
     } else if (PQntuples(res) != 0) {
@@ -96,8 +93,8 @@ void Daemon::recognize() {
     auto signal = std::signal(SIGINT, signalHandler);
     while (signal != SIG_IGN) {
         if (isEmpty()) {
-            //std::cout << "Sleep for 5 sec\n";
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+//            std::cout << "Sleep for 1 sec\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
             continue;
         }
         auto record = getPath();
@@ -109,18 +106,19 @@ void Daemon::recognize() {
         }
         int id = getBiggestID() + 1;
         int picTemplate = getTemplateOfPicture(record.second);
-        string picText = getTextInPicture(record.second);
-        insertRecord(id, record.second, picTemplate, picText);
+        std::string picText = getTextInPicture(record.second);
+        std::string path = ".." + std::string(record.second.begin() + 10, record.second.end());
+        insertRecord(id, path, picTemplate, picText);
     }
 }
 
-int Daemon::getTemplateOfPicture(const string& path) {
+int Daemon::getTemplateOfPicture(const std::string& path) {
     /// TODO: определяем шаблон картинки
     return 1;
 }
 
-string Daemon::getTextInPicture(const string& path) {
-    string text;
+std::string Daemon::getTextInPicture(const std::string& path) {
+    std::string text;
     auto *ocr = new tesseract::TessBaseAPI();
 
     // Initialize OCR engine to use English (eng) and The LSTM OCR engine.
@@ -130,13 +128,12 @@ string Daemon::getTextInPicture(const string& path) {
     ocr->SetPageSegMode(tesseract::PSM_AUTO);
 
     // Open input image using OpenCV
-    std::cout << "reading from " << path << "\n";
-    Mat im = cv::imread(path, IMREAD_COLOR);
+    cv::Mat im = cv::imread(path, cv::IMREAD_COLOR);
 
     // Set image data
     ocr->SetImage(im.data, im.cols, im.rows, 3, static_cast<int>(im.step));
 
-    text = string(ocr->GetUTF8Text());
+    text = std::string(ocr->GetUTF8Text());
 
     ocr->End();
     return text;
