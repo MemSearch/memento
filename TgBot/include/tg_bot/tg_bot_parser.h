@@ -29,7 +29,7 @@ public:
     void startWorking(ImgDB& db);
 
 private:
-    void downloadFile();
+    void downloadFile(ImgDB& db);
 
     TgBot::Bot bot;
     uint64_t counter;
