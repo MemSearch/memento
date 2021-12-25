@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
         char newBuf[1024];
         std::vector<std::string> urls;
         try {
-             SearcherRequest request(wreq, templateNum);
+             SearcherRequest request(wreq, 1);
              urls = request.getResult();
         } catch (std::runtime_error& e) {
             std::cerr << "error : " << e.what() << "\n";
