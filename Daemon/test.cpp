@@ -17,8 +17,6 @@ TEST(Test1, getPath_isEmpty_removeRecord) {
         PQfinish(conn);
     }
 
-//    string creating_table = "CREATE TABLE IF NOT EXISTS new_table (id integer, name text);"
-//                            "CREATE TABLE IF NOT EXISTS parsed (id integer, path text, template integer, text text);"
     string creating_table = "INSERT INTO new_table VALUES(1, 'path/pic1');"
                             "INSERT INTO new_table VALUES(2, 'path/pic2');"
                             "INSERT INTO new_table VALUES(3, 'path/pic3');";
@@ -31,7 +29,7 @@ TEST(Test1, getPath_isEmpty_removeRecord) {
     PQclear(res);
     PQfinish(conn);
 
-    Daemon daemon;
+    TextRecognizer daemon(connInfo);
 
     EXPECT_FALSE(daemon.isEmpty());
 
@@ -56,7 +54,7 @@ TEST(Test2, insertRecord) {
     std::vector<int> templates = {1, 2, 3};
     std::vector<string> texts = {"Text1", "Text2", "Text3"};
 
-    Daemon daemon;
+    TextRecognizer daemon(connInfo);
     for (size_t i = 0; i < 3; ++i) {
         int id = daemon.getBiggestID() + 1;
         daemon.insertRecord(id, paths[i], templates[i], texts[i]);
@@ -125,7 +123,7 @@ TEST(Test2, insertRecord) {
 //    sqlite3_free(error_parsed);
 //    sqlite3_close(pdb);
 //
-//    Daemon daemon(pFilename, rFilename);
+//    TextRecognizer daemon(pFilename, rFilename);
 //    daemon.recognize();
 //
 //    std::vector<string> urls = {url1, url2, url3, url4};
