@@ -1,7 +1,10 @@
-#include "daemon.h"
 #include <opencv2/opencv.hpp>
+#include <tesseract/baseapi.h>
+#include <leptonica/allheaders.h>
 
-Daemon::Daemon(const std::string& connInfo) : conn(PQconnectdb(connInfo.c_str()), PQfinish) {
+#include "daemon.h"
+
+Daemon::Daemon(const std::string &connInfo) : conn(PQconnectdb(connInfo.c_str()), PQfinish) {
 
     if (PQstatus(conn.get()) != CONNECTION_OK) {
         std::cout << "Connection to database failed: " << PQerrorMessage(conn.get()) << "\n";
@@ -38,7 +41,7 @@ std::pair<int, std::string> Daemon::getPath() {
     return {0, ""};
 }
 
-void Daemon::removeRecord(const std::pair<int, std::string>& record) {
+void Daemon::removeRecord(const std::pair<int, std::string> &record) {
     const std::string command =
             "DELETE FROM new_table WHERE id = " + std::to_string(record.first) + " AND name = '" + record.second + "'";
     PGresult *res = PQexec(conn.get(), command.c_str());
@@ -64,9 +67,10 @@ int Daemon::getBiggestID() {
     return result;
 }
 
-void Daemon::insertRecord(int id, const std::string& path, int pattern , const std::string& text) {
+void Daemon::insertRecord(int id, const std::string &path, int pattern, const std::string &text) {
     const std::string command =
-            "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + path + "', " + std::to_string(pattern) + ", '" + text + "');";
+            "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + path + "', " + std::to_string(pattern) +
+            ", '" + text + "');";
     PGresult *res = PQexec(conn.get(), command.c_str());
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
         std::cout << "Insert into table failed: " << PQresultErrorMessage(res)
@@ -105,16 +109,10 @@ void Daemon::recognize() {
             removeRecord(record);
         }
         int id = getBiggestID() + 1;
-        int picTemplate = getTemplateOfPicture(record.second);
         std::string picText = getTextInPicture(record.second);
         std::string path = ".." + std::string(record.second.begin() + 10, record.second.end());
-        insertRecord(id, path, picTemplate, picText);
+        insertRecord(id, path, 1, picText);
     }
-}
-
-int Daemon::getTemplateOfPicture(const std::string& path) {
-    /// TODO: определяем шаблон картинки
-    return 1;
 }
 
 std::string Daemon::getTextInPicture(const std::string& path) {

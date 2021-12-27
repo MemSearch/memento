@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <libpq-fe.h>
-#include <tesseract/baseapi.h>
 #include <cstdlib>
 #include <string>
 #include <thread>
@@ -23,8 +22,7 @@ public:
     void recognize();
 
 private:
-    int getTemplateOfPicture(const std::string& path);
-    std::string getTextInPicture(const std::string& path);
+    static std::string getTextInPicture(const std::string& path);
 
     std::unique_ptr<PGconn, void(*)(PGconn *)> conn;
 };
