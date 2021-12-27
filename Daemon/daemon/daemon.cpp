@@ -4,7 +4,7 @@
 
 #include "daemon.h"
 
-Daemon::Daemon(const std::string &connInfo) : conn(PQconnectdb(connInfo.c_str()), PQfinish) {
+TextRecognizer::TextRecognizer(const std::string &connInfo) : conn(PQconnectdb(connInfo.c_str()), PQfinish) {
 
     if (PQstatus(conn.get()) != CONNECTION_OK) {
         std::cout << "Connection to database failed: " << PQerrorMessage(conn.get()) << "\n";
@@ -20,14 +20,14 @@ static void signalHandler(int signum) {
     exit(signum);
 }
 
-std::pair<int, std::string> Daemon::getPath() {
+std::pair<int, std::string> TextRecognizer::getPath() {
     PGresult *res = PQexec(conn.get(), "SELECT id, name FROM new_table ORDER BY id DESC limit 1;");
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
         std::cout << "Select failed: " << PQresultErrorMessage(res) << std::endl;
     } else {
         std::cout << "Get " << PQntuples(res) << " tuples, each tuple has "
                   << PQnfields(res) << " fields" << std::endl;
-        // print column values
+
         std::cout << PQgetvalue(res, 0, 0) << "   "
                   << PQgetvalue(res, 0, 1) << '\n';
         char buffer[100];
@@ -41,7 +41,7 @@ std::pair<int, std::string> Daemon::getPath() {
     return {0, ""};
 }
 
-void Daemon::removeRecord(const std::pair<int, std::string> &record) {
+void TextRecognizer::removeRecord(const std::pair<int, std::string> &record) {
     const std::string command =
             "DELETE FROM new_table WHERE id = " + std::to_string(record.first) + " AND name = '" + record.second + "'";
     PGresult *res = PQexec(conn.get(), command.c_str());
@@ -52,7 +52,7 @@ void Daemon::removeRecord(const std::pair<int, std::string> &record) {
     PQclear(res);
 }
 
-int Daemon::getBiggestID() {
+int TextRecognizer::getBiggestID() {
     int result = 0;
 
     PGresult *res = PQexec(conn.get(), "SELECT id FROM new_table ORDER BY id DESC limit 1;");
@@ -67,7 +67,7 @@ int Daemon::getBiggestID() {
     return result;
 }
 
-void Daemon::insertRecord(int id, const std::string &path, int pattern, const std::string &text) {
+void TextRecognizer::insertRecord(int id, const std::string &path, int pattern, const std::string &text) {
     const std::string command =
             "INSERT INTO parsed VALUES (" + std::to_string(id) + ", '" + path + "', " + std::to_string(pattern) +
             ", '" + text + "');";
@@ -79,7 +79,7 @@ void Daemon::insertRecord(int id, const std::string &path, int pattern, const st
     PQclear(res);
 }
 
-bool Daemon::isEmpty() {
+bool TextRecognizer::isEmpty() {
     bool empty = true;
 
     PGresult *res = PQexec(conn.get(), "SELECT * FROM new_table ORDER BY id DESC limit 1;");
@@ -93,18 +93,15 @@ bool Daemon::isEmpty() {
     return empty;
 }
 
-void Daemon::recognize() {
+void TextRecognizer::recognize() {
     auto signal = std::signal(SIGINT, signalHandler);
     while (signal != SIG_IGN) {
         if (isEmpty()) {
-//            std::cout << "Sleep for 1 sec\n";
             std::this_thread::sleep_for(std::chrono::seconds(1));
             continue;
         }
         auto record = getPath();
-        std::cout << "We get :\n";
-        std::cout << record.first << "   "
-                  << record.second << '\n';
+
         if (!(record.first == 0 && record.second.empty())) {
             removeRecord(record);
         }
@@ -115,7 +112,7 @@ void Daemon::recognize() {
     }
 }
 
-std::string Daemon::getTextInPicture(const std::string& path) {
+std::string TextRecognizer::getTextInPicture(const std::string& path) {
     std::string text;
     auto *ocr = new tesseract::TessBaseAPI();
 

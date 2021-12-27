@@ -9,11 +9,11 @@
 #include <chrono>
 #include <csignal>
 
-class Daemon {
+class TextRecognizer {
 public:
-    explicit Daemon(const std::string& connInfo);
-    Daemon() = delete;
-    ~Daemon() {}
+    explicit TextRecognizer(const std::string& connInfo);
+    TextRecognizer() = delete;
+    ~TextRecognizer() {}
     std::pair<int, std::string> getPath();
     void removeRecord(const std::pair<int, std::string>& record);
     int getBiggestID();
